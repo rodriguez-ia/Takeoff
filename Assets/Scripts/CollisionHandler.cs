@@ -13,7 +13,7 @@ public class CollisionHandler : MonoBehaviour
                 ;
                 break;
             case "Finish":
-                ;
+                LoadNextScene();
                 break;
             default: 
                 ReloadScene();
@@ -21,9 +21,19 @@ public class CollisionHandler : MonoBehaviour
         }
     }
 
+    void LoadNextScene()
+    {
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if(nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+
     void ReloadScene()
     {
-        string currentSceneName = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(currentSceneName);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
     }
 }
