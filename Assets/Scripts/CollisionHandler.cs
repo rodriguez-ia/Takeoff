@@ -5,20 +5,59 @@ using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
+    // PARAMETERS - for tuning, typically set in the editor
+    // CACHE - e.g. references for readability or speed
+    // STATE - private instance (member) variables
+
+    [SerializeField] float invokeDelay = 2.5f;
+    [SerializeField] AudioClip levelPassed;
+    [SerializeField] AudioClip deathExplosion;
+
+    Movement move;
+    AudioSource audSource;
+
+    bool isTransitioning = false;
+
+    void Start()
+    {
+        move = GetComponent<Movement>();
+        audSource = GetComponent<AudioSource>();
+    }
+
     void OnCollisionEnter(Collision other)
     {
-        switch(other.gameObject.tag)
+        if (isTransitioning) { return; }
+
+        switch (other.gameObject.tag)
         {
             case "Friendly":
                 ;
                 break;
             case "Finish":
-                LoadNextScene();
+                CompleteLevel();
                 break;
             default: 
-                ReloadScene();
+                Crash();
                 break;
         }
+    }
+
+    void CompleteLevel()
+    {
+        isTransitioning = true;
+        move.enabled = false;
+        audSource.Stop();
+        audSource.PlayOneShot(levelPassed);
+        Invoke("LoadNextScene", invokeDelay);
+    }
+
+    void Crash()
+    {
+        isTransitioning = true;
+        move.enabled = false;
+        audSource.Stop();
+        audSource.PlayOneShot(deathExplosion);
+        Invoke("ReloadScene", invokeDelay);
     }
 
     void LoadNextScene()

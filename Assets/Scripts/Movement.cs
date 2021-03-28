@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    Rigidbody rbody;
-    AudioSource audSource;
+    // PARAMETERS - for tuning, typically set in the editor
+    // CACHE - e.g. references for readability or speed
+    // STATE - private instance (member) variables
+
     [SerializeField] int thrust = 1000;
     [SerializeField] int rotate = 150;
+    [SerializeField] AudioClip engineThrusters;
+
+    Rigidbody rbody;
+    AudioSource audSource;
+
 
     // Start is called before the first frame update
     void Start()
@@ -27,12 +34,12 @@ public class Movement : MonoBehaviour
     void ProcessThrust()
     {
         // Thrust forward
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             rbody.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
-            if(!audSource.isPlaying)
+            if (!audSource.isPlaying)
             {
-                audSource.Play();
+                audSource.PlayOneShot(engineThrusters);
             }
         }
         else
@@ -44,12 +51,12 @@ public class Movement : MonoBehaviour
     void ProcessRotation()
     {
         // Rotate left
-        if(Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
             RotateObject(rotate);   
         }
         // Rotate right
-        else if(Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
             RotateObject(-1 * rotate);
         }
