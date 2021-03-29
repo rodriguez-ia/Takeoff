@@ -12,6 +12,8 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] float invokeDelay = 2.5f;
     [SerializeField] AudioClip levelPassed;
     [SerializeField] AudioClip deathExplosion;
+    [SerializeField] ParticleSystem levelPassedParticles;
+    [SerializeField] ParticleSystem deathExplosionParticles;
 
     Movement move;
     AudioSource audSource;
@@ -48,6 +50,7 @@ public class CollisionHandler : MonoBehaviour
         move.enabled = false;
         audSource.Stop();
         audSource.PlayOneShot(levelPassed);
+        levelPassedParticles.Play();
         Invoke("LoadNextScene", invokeDelay);
     }
 
@@ -57,13 +60,14 @@ public class CollisionHandler : MonoBehaviour
         move.enabled = false;
         audSource.Stop();
         audSource.PlayOneShot(deathExplosion);
+        deathExplosionParticles.Play();
         Invoke("ReloadScene", invokeDelay);
     }
 
     void LoadNextScene()
     {
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        if(nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
         }

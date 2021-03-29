@@ -11,23 +11,50 @@ public class Movement : MonoBehaviour
     [SerializeField] int thrust = 1000;
     [SerializeField] int rotate = 150;
     [SerializeField] AudioClip engineThrusters;
+    [SerializeField] ParticleSystem leftThrusterParticles;
+    [SerializeField] ParticleSystem rightThrusterParticles;
+    [SerializeField] ParticleSystem mainEngineThrusterParticles;
 
     Rigidbody rbody;
     AudioSource audSource;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         rbody = GetComponent<Rigidbody>();
         audSource = GetComponent<AudioSource>();
+
+        rbody.constraints = RigidbodyConstraints.FreezePositionZ;
     }
 
-    // Update is called once per frame
     void Update()
     {
         ProcessThrust();
         ProcessRotation();
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "Friendly":
+                ;
+                break;
+            case "Finish":
+                rbody.constraints = RigidbodyConstraints.None;
+                DisableParticles();
+                break;
+            default:
+                rbody.constraints = RigidbodyConstraints.None;
+                DisableParticles();
+                break;
+        }
+    }
+
+    void DisableParticles()
+    {
+        leftThrusterParticles.Stop();
+        rightThrusterParticles.Stop();
+        mainEngineThrusterParticles.Stop();
     }
 
     // Processes user input
@@ -36,16 +63,31 @@ public class Movement : MonoBehaviour
         // Thrust forward
         if (Input.GetKey(KeyCode.Space))
         {
-            rbody.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
-            if (!audSource.isPlaying)
-            {
-                audSource.PlayOneShot(engineThrusters);
-            }
+            BeginThrusting();
         }
         else
         {
-            audSource.Stop();
+            StopThrusting();
         }
+    }
+
+    void BeginThrusting()
+    {
+        rbody.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
+        if (!audSource.isPlaying)
+        {
+            audSource.PlayOneShot(engineThrusters);
+        }
+        if (!mainEngineThrusterParticles.isPlaying)
+        {
+            mainEngineThrusterParticles.Play();
+        }
+    }
+
+    void StopThrusting()
+    {
+        audSource.Stop();
+        mainEngineThrusterParticles.Stop();
     }
 
     void ProcessRotation()
@@ -53,13 +95,41 @@ public class Movement : MonoBehaviour
         // Rotate left
         if (Input.GetKey(KeyCode.A))
         {
-            RotateObject(rotate);   
+            RotateLeft();
         }
         // Rotate right
         else if (Input.GetKey(KeyCode.D))
         {
-            RotateObject(-1 * rotate);
+            RotateRight();
         }
+        else
+        {
+            StopRotating();
+        }
+    }
+
+    void RotateLeft()
+    {
+        RotateObject(rotate);
+        if (!rightThrusterParticles.isPlaying)
+        {
+            rightThrusterParticles.Play();
+        }
+    }
+
+    void RotateRight()
+    {
+        RotateObject(-1 * rotate);
+        if (!leftThrusterParticles.isPlaying)
+        {
+            leftThrusterParticles.Play();
+        }
+    }
+
+    void StopRotating()
+    {
+        leftThrusterParticles.Stop();
+        rightThrusterParticles.Stop();
     }
 
     void RotateObject(int rotationValue)
