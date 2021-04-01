@@ -76,7 +76,7 @@ public class Movement : MonoBehaviour
         rbody.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
         if (!audSource.isPlaying)
         {
-            audSource.PlayOneShot(engineThrusters);
+            audSource.PlayOneShot(engineThrusters, 0.4f);
         }
         if (!mainEngineThrusterParticles.isPlaying)
         {

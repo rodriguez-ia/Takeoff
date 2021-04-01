@@ -67,7 +67,7 @@ public class CollisionHandler : MonoBehaviour
         isTransitioning = true;
         move.enabled = false;
         audSource.Stop();
-        audSource.PlayOneShot(levelPassed);
+        audSource.PlayOneShot(levelPassed, 0.8f);
         levelPassedParticles.Play();
         Invoke("LoadNextScene", invokeDelay);
     }
@@ -77,7 +77,7 @@ public class CollisionHandler : MonoBehaviour
         isTransitioning = true;
         move.enabled = false;
         audSource.Stop();
-        audSource.PlayOneShot(deathExplosion);
+        audSource.PlayOneShot(deathExplosion, 0.4f);
         deathExplosionParticles.Play();
         Invoke("ReloadScene", invokeDelay);
     }
